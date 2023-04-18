@@ -148,12 +148,12 @@ export function invokeFeature(feature: Feature, args: CliArg[]): number {
     /** 清理命令行参数列表 */
     for (let i = 0; i < args.length; i++) {
         const arg = args[i]
-        if (typeof arg === 'string') {
-            if (cli.app.options_end && arg === cli.app.options_end)
-                args.splice(i, 1)
+        if(typeof arg !== 'string') {
+            args.splice(i--, 1)
+        } else if (cli.app.options_end && arg === cli.app.options_end) {
+            args.splice(i, 1)
             break
         }
-        args.splice(i--, 1)
     }
 
     /** 若命令行携带非预期的参数则报错 */
