@@ -21,11 +21,11 @@ export function Brief(brief: string) {
 
 export function Args(args: string[] | ArgPass) {
     return (target: any, propertyKey: string) => {
-        GetOptionDesc(target, propertyKey).args = args
+        GetOptionDesc(target, propertyKey).arg = args
     }
 }
 
-export function Complete(complete: ((editing: boolean, args: string[]) => string[])) {
+export function Complete(complete: (() => string[])) {
     return (target: any, propertyKey: string) => {
         GetOptionDesc(target, propertyKey).complete = complete
     }

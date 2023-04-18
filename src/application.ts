@@ -87,7 +87,7 @@ export function verifyDefinitions(module: any, global_names = new Set<string>())
             const path = module.main.split('.')
             const element = locateElement(path)[0]
             if (!IsFeature(element)) {
-                console.error(`[ERROR] Default entry '${module.main}' not found.`)
+                console.error(`Default entry '${module.main}' not found.`)
                 correct = false
             }
         }
@@ -114,7 +114,7 @@ export function verifyDefinitions(module: any, global_names = new Set<string>())
             if (!IsFeature(feature) && !IsModule(feature)) continue
 
             if (local_names.has(key)) {
-                console.error(`[ERROR] Duplicate definition: ${key}`)
+                console.error(`Duplicate definition: ${key}`)
                 correct = false
                 continue
             }

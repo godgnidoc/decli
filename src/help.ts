@@ -21,7 +21,7 @@ class DefaultHelpFeature extends Feature {
             } else if (IsModule(element)) {
                 this.showModuleHelp(element)
             } else {
-                console.error(`[ERROR] Unknown feature or module '${args.join('.')}'`)
+                console.error(`Unknown feature or module '${args.join('.')}'`)
                 return -1
             }
         }
@@ -56,11 +56,11 @@ class DefaultHelpFeature extends Feature {
     private showOptionsHelp(options: { [key: string]: Option }) {
         for (const option of Object.values(options)) {
             const switchs = [option.short, option.long].filter(o => o).join(', ')
-            const args = option.args instanceof Array
-                ? (' ' + option.args.join('|'))
-                : option.args instanceof Function
-                    ? ' ...'
-                    : ''
+            const args = option.arg === undefined
+                ? ''
+                : option.arg instanceof Array
+                    ? (' ' + option.arg.join('|'))
+                    : ' ...'
             const required = option.required ? '[REQUIRED] ' : ''
             const brief = option.brief ? ` --- ${option.brief}` : ''
 

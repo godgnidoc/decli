@@ -20,24 +20,24 @@ export function execute(app: Application, args: string[]): number {
     cli.app = app
     cli.options = app.options || {}
     if (!verifyDefinitions(app)) {
-        console.error(`[ERROR] Application '${app.name}' definition error.`)
+        console.error(`Application '${app.name}' definition error.`)
         return -1
     }
 
     unfoldShortOptions(args)
 
     if (!consumeGlobalOptions(app, args)) {
-        console.error(`[ERROR] Failed to parse global options.`)
+        console.error(`Failed to parse global options.`)
         return -1
     }
 
     if (!locateGlobalElement(app, args)) {
-        console.error(`[ERROR] Failed to locate entry point.`)
+        console.error(`Failed to locate entry point.`)
         return -1
     }
 
     if (!consumeFeatureOptions(cli.element as Feature, args)) {
-        console.error(`[ERROR] Failed to parse options.`)
+        console.error(`Failed to parse options.`)
         return -1
     }
 
@@ -158,7 +158,7 @@ export function invokeFeature(feature: Feature, args: CliArg[]): number {
 
     /** 若命令行携带非预期的参数则报错 */
     if (!feature.args && args.length > 0) {
-        console.error(`[ERROR] expecting no arguments, but got ${args.length} arguments`)
+        console.error(`Expecting no arguments, but got ${args.length} arguments`)
         return -1
     }
 

@@ -1,4 +1,4 @@
-import { ArgPass, CliArg, CliOption, parseOptionArg } from "./argument"
+import { CliArg, CliOption, parseOptionArg } from "./argument"
 import { cli, comp } from "./common"
 
 export interface Option {
@@ -26,14 +26,12 @@ export interface Option {
     /** 
      * 选项参数
      * 若为字符串数组，则表示仅接受一个参数，且参数必须为数组中的某个字符串
-     * 若为函数，则表示自定义参数检查，函数返回值为 boolean 则表示参数合法，否则返回错误信息
-     *  自定义参数检查函数返回 true 表示接受当前参数，继续检查下一个参数
-     *  自定义参数检查函数返回 false 表示不接受当前参数，且不再检查后续参数
-     *  自定义参数检查函数的第一个参数为已接受的参数，第二个参数为当前接收到的参数
-     *  命令行参数耗尽后，自定义参数检查函数的第二个参数为 undefined
-     *  自定义参数检查函数返回Error不会导致参数接纳被停止，而是报错后继续分析参数
+     * 若为函数，则表示自定义参数检查
+     *  函数返回 true 表示参数合法
+     *  返回 false 表示参数不合法，打印默认错误信息
+     *  返回 Error 表示参数不合法且需要输出错误信息
      */
-    args?: string[] | ArgPass
+    arg?: string[] | ((arg: string) => boolean | Error)
 
     /** 
      * 参数自动补全 
@@ -41,7 +39,7 @@ export interface Option {
      * @param args 已经输入的参数
      * @return 若返回 undefined 则表示不支持自动补全
      */
-    complete?: ((editing: boolean, args: string[]) => string[])
+    complete?: (() => string[])
 }
 
 export function GetOptionDescTable(target: any, create = false): undefined | { [key: string]: Option } {
@@ -113,17 +111,12 @@ export function parseOptions(target: any, defines: { [key: string]: Option }, ar
 
         /** 为选项设置值 */
         if (option.define.repeat) {
-            if (target[option.define.property] instanceof Array) {
-                target[option.define.property].push(... (
-                    option.value instanceof Array
-                        ? option.value
-                        : [option.value]
-                ))
-            } else {
-                target[option.define.property] = option.value instanceof Array
-                    ? option.value
-                    : [option.value]
-            }
+            if (!target[option.define.property])
+                target[option.define.property] = []
+            if (!(target[option.define.property] instanceof Array))
+                target[option.define.property] = [target[option.define.property]]
+
+            target[option.define.property].push(option.value)
         } else {
             if (seen.has(option.define.property))
                 console.warn(`Option ${option.keyword} is already set, the new value will overwrite the old one`)
@@ -156,13 +149,13 @@ function verifyOptionShortName(option: Option, local_names: Set<string>) {
     if (option.short) {
         /** 短选项格式检查 */
         if (!/^-[a-zA-Z0-9]$/.test(option.short)) {
-            console.error(`[ERROR] Invalid option short name: ${option.short}`)
+            console.error(`Invalid option short name: ${option.short}`)
             return false
         }
 
         /** 符号冲突检查 */
         if (local_names.has(option.short)) {
-            console.error(`[ERROR] Duplicate option short name: ${option.short}`)
+            console.error(`Duplicate option short name: ${option.short}`)
             return false
         }
 
@@ -175,13 +168,13 @@ function verifyOptionLongName(option: Option, local_names: Set<string>) {
     if (option.long) {
         /** 长选项格式检查 */
         if (!/^--[a-zA-Z0-9-]+$/.test(option.long)) {
-            console.error(`[ERROR] Invalid option long name: ${option.long}`)
+            console.error(`Invalid option long name: ${option.long}`)
             return false
         }
 
         /** 符号冲突检查 */
         if (local_names.has(option.long)) {
-            console.error(`[ERROR] Duplicate option long name: ${option.long}`)
+            console.error(`Duplicate option long name: ${option.long}`)
             return false
         }
 
@@ -196,7 +189,7 @@ export function verifyOptionDefinitions(options: { [key: string]: Option }, loca
     for (const key in options) {
         const option = options[key]
         if (typeof option !== 'object') {
-            correct = (console.error(`[ERROR] Invalid option definition: ${key}`), false)
+            correct = (console.error(`Invalid option definition: ${key}`), false)
             continue
         }
 
@@ -212,13 +205,13 @@ export function verifyOptionDefinitions(options: { [key: string]: Option }, loca
 
         /** 短选项和长选项至少有一个 */
         if (!option.short && !option.long) {
-            correct = (console.error(`[ERROR] Option must have a short or long name: ${key}`), false)
+            correct = (console.error(`Option must have a short or long name: ${key}`), false)
             continue
         }
 
         /** 重复性检查 */
-        if (option.repeat && !option.args) {
-            correct = (console.error(`[ERROR] Repeatable option must have arguments: ${key}`), false)
+        if (option.repeat && !option.arg) {
+            correct = (console.error(`Repeatable option must have arguments: ${key}`), false)
             continue
         }
     }
