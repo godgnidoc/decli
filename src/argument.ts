@@ -39,7 +39,7 @@ function parseOptionArgCaseCanddiate(option: CliOption, args: CliArg[], start: n
     /** 若正在补全，给出补全推荐 */
     if (comp.completeing && start == args.length - 1 && comp.editing) {
         comp.completeing = false
-        comp.response = option.define.args.filter(arg => arg.startsWith(option.value as string))
+        comp.response = option.define.args.filter(can => can.startsWith(arg as string))
     }
 
     /** 消耗一个参数 */
