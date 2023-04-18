@@ -6,7 +6,7 @@ export type CliOption = { is: 'option', keyword: string, define: Option, value: 
 export type CliElePath = { is: 'path', path: string[] }
 export type ArgPass = (arg: string) => Error | boolean
 
-export function parseOptionArg(option: CliOption, args: CliArg[], start: number) {
+export async function parseOptionArg(option: CliOption, args: CliArg[], start: number) {
     if (!option.define.arg) {
         option.value = true
         return true
@@ -38,7 +38,8 @@ export function parseOptionArg(option: CliOption, args: CliArg[], start: number)
         }
         if( option.define.arg instanceof Function ) {
             if( option.define.complete ) {
-                comp.response.push(...option.define.complete().filter(can => can.startsWith(arg as string)))
+                const resule = await option.define.complete()
+                comp.response.push(...resule.filter(can => can.startsWith(arg as string)))
             }
         }
         comp.completeing = false

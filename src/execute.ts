@@ -16,7 +16,7 @@ import { GetOptionDescTable, parseOptions, unfoldShortOptions } from "./option"
  * @param args 命令行参数，应当仅包含参数，不包含命令本身
  * @return 返回值为 0 表示正常退出，否则表示异常退出
  */
-export function execute(app: Application, args: string[]): number {
+export async function execute(app: Application, args: string[]): Promise<number> {
     cli.app = app
     cli.options = app.options || {}
     if (!verifyDefinitions(app)) {
@@ -26,7 +26,7 @@ export function execute(app: Application, args: string[]): number {
 
     unfoldShortOptions(args)
 
-    if (!consumeGlobalOptions(app, args)) {
+    if (!(await consumeGlobalOptions(app, args))) {
         console.error(`Failed to parse global options.`)
         return -1
     }
@@ -36,33 +36,33 @@ export function execute(app: Application, args: string[]): number {
         return -1
     }
 
-    if (!consumeFeatureOptions(cli.element as Feature, args)) {
+    if (!(await consumeFeatureOptions(cli.element as Feature, args))) {
         console.error(`Failed to parse options.`)
         return -1
     }
 
     if (app.entry) {
-        const ret = app.entry()
+        const ret = await app.entry()
         if (ret != 0) return ret
     }
 
-    return invokeFeature(cli.element as Feature, args)
+    return await invokeFeature(cli.element as Feature, args)
 }
 
-export function consumeGlobalOptions(app: Application, args: CliArg[]) {
+export async function consumeGlobalOptions(app: Application, args: CliArg[]) {
     let correct = true
     const defines = GetOptionDescTable(app.options)
     if (typeof defines === 'object') {
-        correct = parseOptions(app.options, defines, args) && correct
+        correct = (await parseOptions(app.options, defines, args)) && correct
     }
     return correct
 }
 
-export function consumeFeatureOptions(feature: Feature, args: CliArg[]) {
+export async function consumeFeatureOptions(feature: Feature, args: CliArg[]) {
     let correct = true
     const defines = GetOptionDescTable(feature)
     if (typeof defines === 'object') {
-        correct = parseOptions(feature, defines, args) && correct
+        correct = (await parseOptions(feature, defines, args)) && correct
     }
     return correct
 }
@@ -143,7 +143,7 @@ export function locateGlobalElement(app: Application, args: CliArg[]) {
     return IsFeature(cli.element)
 }
 
-export function invokeFeature(feature: Feature, args: CliArg[]): number {
+export async function invokeFeature(feature: Feature, args: CliArg[]): Promise<number> {
 
     /** 清理命令行参数列表 */
     for (let i = 0; i < args.length; i++) {
@@ -163,11 +163,11 @@ export function invokeFeature(feature: Feature, args: CliArg[]): number {
     }
 
     /** 正常调用接口回调 */
-    if (!comp.completeing) return feature.entry.apply(feature, args)
+    if (!comp.completeing) return await feature.entry.apply(feature, args)
 
     /** 尝试给出自动补全提示 */
     if (feature.complete) {
-        const result = feature.complete(comp.editing ? true : false, args as string[])
+        const result = await feature.complete(comp.editing ? true : false, args as string[])
         if (result) comp.response.push(...result)
     }
 }

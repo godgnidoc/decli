@@ -31,7 +31,7 @@ class DefaultCompleteFeature extends Feature {
     @Brief('enable debug mode')
     debug = false
 
-    entry(): number {
+    async entry(): Promise<number> {
         if (!this.debug) {
             /** 暂时关闭输出 */
             console.log = console.error = console.info = console.warn = () => { }
@@ -52,13 +52,13 @@ class DefaultCompleteFeature extends Feature {
         while (true) {
             unfoldShortOptions(args)
             if (!comp.completeing) break
-            if (!consumeGlobalOptions(cli.app, args)) break
+            if (!(await consumeGlobalOptions(cli.app, args))) break
             if (!comp.completeing) break
             if (!locateGlobalElement(cli.app, args)) break
             if (!comp.completeing) break
-            if (!consumeFeatureOptions(cli.element as Feature, args)) break
+            if (!(await consumeFeatureOptions(cli.element as Feature, args))) break
             if (!comp.completeing) break
-            invokeFeature(cli.element as Feature, args)
+            await invokeFeature(cli.element as Feature, args)
             break
         }
 

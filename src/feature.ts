@@ -13,8 +13,8 @@ export abstract class Feature {
      * @param editing 是否正在编辑最后一个参数
      * @param args 已经输入的参数
      */
-    complete?: (editing: boolean, args: string[]) => string[]
+    complete?: (editing: boolean, args: string[]) => string[] | Promise<string[]>
 
     /** 功能入口 */
-    abstract entry(...args: string[]): number
+    abstract entry(...args: string[]): number | Promise<number>
 }

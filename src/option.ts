@@ -31,7 +31,7 @@ export interface Option {
      *  返回 false 表示参数不合法，打印默认错误信息
      *  返回 Error 表示参数不合法且需要输出错误信息
      */
-    arg?: string[] | ((arg: string) => boolean | Error)
+    arg?: string[] | ((arg: string) => boolean | Error | Promise<boolean | Error>)
 
     /** 
      * 参数自动补全 
@@ -39,7 +39,7 @@ export interface Option {
      * @param args 已经输入的参数
      * @return 若返回 undefined 则表示不支持自动补全
      */
-    complete?: (() => string[])
+    complete?: (() => string[]|Promise<string[]>)
 }
 
 export function GetOptionDescTable(target: any, create = false): undefined | { [key: string]: Option } {
@@ -87,7 +87,7 @@ export function unfoldShortOptions(args: string[]) {
     }
 }
 
-export function parseOptions(target: any, defines: { [key: string]: Option }, args: CliArg[]): boolean {
+export async function parseOptions(target: any, defines: { [key: string]: Option }, args: CliArg[]): Promise<boolean> {
     let correct = true
     const pending = new Set<string>(Object.keys(defines).filter(key => defines[key].required))
     const seen = new Set<string>()
@@ -104,7 +104,7 @@ export function parseOptions(target: any, defines: { [key: string]: Option }, ar
         args.splice(i++, 1, option)
         pending.delete(option.define.property)
 
-        if (!parseOptionArg(option, args, i)) {
+        if (!(await parseOptionArg(option, args, i))) {
             correct = false
             continue
         }

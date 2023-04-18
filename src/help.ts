@@ -1,4 +1,4 @@
-import { Element, IsFeature, IsModule, locateElement } from "./application"
+import { Element, IsElement, IsFeature, IsModule, locateElement } from "./application"
 import { cli } from "./common"
 import { Feature } from "./feature"
 import { GetOptionDescTable, Option } from "./option"
@@ -9,6 +9,30 @@ class DefaultHelpFeature extends Feature {
         this.brief = "display this help page"
         this.description = "display help information for the application or a feature"
         this.args = true
+    }
+
+    complete = (editing: boolean, args: string[]) => {
+        const [element, path] = locateElement(args)
+        if (path.length == args.length) {
+            if (IsModule(element)) {
+                if (editing) {
+                    const mod = locateElement(args.slice(0, -1))[0]
+                    return Object.keys(mod)
+                        .filter(key => IsElement(mod[key]))
+                        .filter(key => key.startsWith(args[args.length - 1]))
+                } else {
+                    return Object.keys(element)
+                        .filter(key => IsElement(element[key]))
+                }
+            }
+        } else if (path.length == args.length - 1) {
+            if (IsModule(element)) {
+                return Object.keys(element)
+                    .filter(key => IsElement(element[key]))
+                    .filter(key => key.startsWith(args[args.length - 1]))
+            }
+        }
+        return []
     }
 
     entry(...args: string[]): number {

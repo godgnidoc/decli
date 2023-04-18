@@ -23,7 +23,7 @@ export interface Application {
      * 应用主入口，若设置，则在调用特性之前先执行此入口
      * 若此入口返回非零，则放弃调用特性入口
      */
-    readonly entry?: () => number
+    readonly entry?: () => number | Promise<number>
 
     /** 简介 */
     readonly brief?: string
