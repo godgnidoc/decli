@@ -1,11 +1,11 @@
 {
   "name": "@godgnidoc/decli",
+  "version": "0.0.4",
   "description": "A declarative command-line application framework for TypeScript",
   "repository": {
     "type": "git",
     "url": "https://github.com/godgnidoc/tcli.git"
   },
-  "version": "0.0.3",
   "main": "dist/index.js",
   "type": "commonjs",
   "types": "types/index.d.ts",
