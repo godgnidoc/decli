@@ -41,6 +41,11 @@ export function execute(app: Application, args: string[]): number {
         return -1
     }
 
+    if (app.entry) {
+        const ret = app.entry()
+        if (ret != 0) return ret
+    }
+
     return invokeFeature(cli.element as Feature, args)
 }
 
