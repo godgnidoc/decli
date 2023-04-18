@@ -1,0 +1,16 @@
+{
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"],
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "ES6",
+        "moduleResolution": "node",
+        "declaration": true,
+        "declarationDir": "types",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "outDir": "dist",
+    }
+}
