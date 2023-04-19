@@ -15,16 +15,23 @@ export async function parseOptionArg(option: CliOption, args: CliArg[], start: n
     const arg = args[start]
 
     /** 若正在补全，给出补全推荐 */
-    if (comp.completeing && comp.editing && !arg) {
-        const defines = GetOptionDescTable(option.define.target)
-        const keywords = [
-            ...Object.values(defines).map(define => define.long),
-            ...Object.values(defines).map(define => define.short)
-        ].filter(keyword => keyword)
-            .filter(keyword => keyword.startsWith(option.keyword))
-        comp.response.push(...keywords)
+    if (!arg && comp.completeing) {
+        if (comp.editing) {
+            const defines = GetOptionDescTable(option.define.target)
+            const keywords = [
+                ...Object.values(defines).map(define => define.long),
+                ...Object.values(defines).map(define => define.short)
+            ].filter(keyword => keyword)
+                .filter(keyword => keyword.startsWith(option.keyword))
+            comp.response.push(...keywords)
+        } else if (option.define.arg instanceof Array) {
+            comp.response = [...option.define.arg]
+            comp.completeing = false
+        } else if (option.define.complete) {
+            comp.response = [...await option.define.complete()]
+            comp.completeing = false
+        }
     }
-
 
     if (typeof arg !== 'string') {
         console.error(`Missing argument for option: ${option.keyword}`)
@@ -32,12 +39,12 @@ export async function parseOptionArg(option: CliOption, args: CliArg[], start: n
     }
 
     /** 若正在补全，给出补全推荐 */
-    if( comp.completeing && comp.editing && start == args.length - 1 ) {
-        if( option.define.arg instanceof Array) {
+    if (comp.completeing && comp.editing && start == args.length - 1) {
+        if (option.define.arg instanceof Array) {
             comp.response.push(...option.define.arg.filter(can => can.startsWith(arg as string)))
         }
-        if( option.define.arg instanceof Function ) {
-            if( option.define.complete ) {
+        if (option.define.arg instanceof Function) {
+            if (option.define.complete) {
                 const resule = await option.define.complete()
                 comp.response.push(...resule.filter(can => can.startsWith(arg as string)))
             }
@@ -46,7 +53,7 @@ export async function parseOptionArg(option: CliOption, args: CliArg[], start: n
     }
 
     args.splice(start, 1)
-    
+
 
     if (option.define.arg instanceof Array) {
         /** 检查参数是否满足要求 */
@@ -54,7 +61,7 @@ export async function parseOptionArg(option: CliOption, args: CliArg[], start: n
             console.error(`Option ${option.keyword} requires an argument in [${option.define.arg.join(', ')}]`)
             return false
         }
-    
+
         option.value = arg
         return true
     }
@@ -65,12 +72,12 @@ export async function parseOptionArg(option: CliOption, args: CliArg[], start: n
             console.error(`Invalid argument for option: ${option.keyword}`)
             return false
         }
-    
+
         if (result instanceof Error) {
             console.error(`${result.message}`)
             return false
         }
-    
+
         option.value = arg
         return true
     }
