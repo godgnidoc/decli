@@ -117,13 +117,13 @@ export function locateGlobalElement(app: Application, args: CliArg[]) {
                 const name = cli.path[cli.path.length - 1]
                 comp.response.push(
                     ...Object.keys(parent)
-                        .filter(key => IsFeature(parent[key]) && key.startsWith(name))
+                        .filter(key => IsElement(parent[key]) && key.startsWith(name))
                 )
             } else {
                 const element = (cli.element || cli.app.elements) as Element
                 comp.response.push(
                     ...Object.keys(element)
-                        .filter(key => IsFeature(element[key]))
+                        .filter(key => IsElement(element[key]))
                 )
             }
         } else {
@@ -135,7 +135,7 @@ export function locateGlobalElement(app: Application, args: CliArg[]) {
 
             comp.response.push(
                 ...Object.keys(element)
-                    .filter(key => IsFeature(element[key]) && key.startsWith(last))
+                    .filter(key => IsElement(element[key]) && key.startsWith(last))
             )
         }
     }
