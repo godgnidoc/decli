@@ -58,7 +58,7 @@ class DefaultHelpFeature extends Feature {
         }
 
         const options = GetOptionDescTable(cli.app.options)
-        console.log(`Usage: ${cli.app.name} [global-options] [[module...] feature] [options] [args]`)
+        console.log(`Usage: ${cli.app.name} [global-options] [module...] feature] [options] [args]`)
 
         if (cli.app.description) {
             console.log()
@@ -118,7 +118,6 @@ class DefaultHelpFeature extends Feature {
     }
 
     private showModuleHelp(module: { [key: string]: Element }) {
-
         const alias: { [name: string]: string[] } = {}
         for (const [name, element] of Object.entries(module)) {
             let collapsed = false
@@ -143,7 +142,7 @@ class DefaultHelpFeature extends Feature {
                 console.log(`Features:`)
             }
             const name = names.join(', ')
-            console.log(`  ${name} ${module[key].brief}`)
+            console.log(`  ${name} --- ${module[key].brief}`)
         }
 
         let sub_title = false
