@@ -104,8 +104,9 @@ export function verifyDefinitions(module: any, global_names = new Set<string>())
         cli.features.add(module)
 
         const options = GetOptionDescTable(module)
+        const local_names = new Set<string>(global_names)
         if (typeof options === 'object')
-            correct = verifyOptionDefinitions(options, global_names) && correct
+            correct = verifyOptionDefinitions(options, local_names) && correct
     } else if (IsModule(module)) {
         const local_names = new Set<string>(global_names)
         /** 扫描功能和子模块 */
