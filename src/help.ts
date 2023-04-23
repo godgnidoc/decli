@@ -83,8 +83,8 @@ class DefaultHelpFeature extends Feature {
             const args = option.arg === undefined
                 ? ''
                 : option.arg instanceof Array
-                    ? (' ' + option.arg.join('|'))
-                    : ' ...'
+                    ? (' <' + option.arg.join('|') + '>')
+                    : ' <...>'
             const required = option.required ? '[REQUIRED] ' : ''
             const brief = option.brief ? ` --- ${option.brief}` : ''
 
