@@ -25,7 +25,7 @@ export function Args(args: string[] | ArgPass) {
     }
 }
 
-export function Complete(complete: ((arg?:string) => string[])) {
+export function Complete(complete: ((arg?:string) => string[] | Promise<string[]>)) {
     return (target: any, propertyKey: string) => {
         GetOptionDesc(target, propertyKey).complete = complete
     }
