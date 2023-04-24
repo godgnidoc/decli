@@ -35,11 +35,10 @@ export interface Option {
 
     /** 
      * 参数自动补全 
-     * @param editing 是否正在编辑最后一个参数
-     * @param args 已经输入的参数
+     * @param arg 可能存在的正在编辑的参数
      * @return 若返回 undefined 则表示不支持自动补全
      */
-    complete?: (() => string[]|Promise<string[]>)
+    complete?: ((arg?:string) => string[]|Promise<string[]>)
 }
 
 export function GetOptionDescTable(target: any, create = false): undefined | { [key: string]: Option } {

@@ -41,12 +41,12 @@ export async function parseOptionArg(option: CliOption, args: CliArg[], start: n
     /** 若正在补全，给出补全推荐 */
     if (comp.completeing && comp.editing && start == args.length - 1) {
         if (option.define.arg instanceof Array) {
-            comp.response.push(...option.define.arg.filter(can => can.startsWith(arg as string)))
+            comp.response.push(...option.define.arg.filter(can => can.startsWith(arg)))
         }
         if (option.define.arg instanceof Function) {
             if (option.define.complete) {
-                const resule = await option.define.complete()
-                comp.response.push(...resule.filter(can => can.startsWith(arg as string)))
+                const resule = await option.define.complete(arg)
+                comp.response.push(...resule.filter(can => can.startsWith(arg)))
             }
         }
         comp.completeing = false
