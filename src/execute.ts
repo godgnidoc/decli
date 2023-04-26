@@ -1,4 +1,4 @@
-import { Application, Element, IsElement, IsFeature, IsModule, locateElement, verifyDefinitions } from "./application"
+import { Application, Element, IsElement, IsFeature, IsModule, locateElement } from "./application"
 import { CliArg, CliElePath } from "./argument"
 import { cli, comp } from "./common"
 import { Feature } from "./feature"
@@ -19,10 +19,6 @@ import { GetOptionDescTable, parseOptions, unfoldShortOptions } from "./option"
 export async function execute(app: Application, args: string[]): Promise<number> {
     cli.app = app
     cli.options = app.options || {}
-    if (!verifyDefinitions(app)) {
-        console.error(`Application '${app.name}' definition error.`)
-        return -1
-    }
 
     unfoldShortOptions(args)
 
