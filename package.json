@@ -1,6 +1,6 @@
 {
   "name": "@godgnidoc/decli",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "A declarative command-line application framework for TypeScript",
   "repository": {
     "type": "git",
