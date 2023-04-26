@@ -1,5 +1,5 @@
 import { execSync } from "child_process"
-import { Args, Brief, LongOpt, ShortOpt } from "./decorator"
+import { Brief, LongOpt, ShortOpt } from "./decorator"
 import { consumeFeatureOptions, consumeGlobalOptions, invokeFeature, locateGlobalElement } from "./execute"
 import { Feature } from "./feature"
 import { unfoldShortOptions } from "./option"
@@ -31,11 +31,6 @@ class DefaultCompleteFeature extends Feature {
     @Brief('enable debug mode')
     debug = false
 
-    @LongOpt('--base-module')
-    @Brief('base module name')
-    @Args(() => true)
-    baseModule = <string>undefined
-
     async entry(): Promise<number> {
         if (!this.debug) {
             /** 暂时关闭输出 */
@@ -48,8 +43,8 @@ class DefaultCompleteFeature extends Feature {
         /** 最后一个单词是否完成编辑 */
         const raw_args = process.env.COMP_LINE.slice(0, parseInt(process.env.COMP_POINT))
         const args = raw_args.split(/\s+/).filter(word => word)
-        args.shift()
-        if (this.baseModule) args.unshift(this.baseModule)
+        const arg0 = args[0].trim()
+        if (arg0 === 'side' || arg0.endsWith('/side')) args.shift()
         comp.editing = raw_args.endsWith(' ')
             ? undefined
             : args[args.length - 1]
