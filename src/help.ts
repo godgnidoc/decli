@@ -8,7 +8,7 @@ class DefaultHelpFeature extends Feature {
         super()
         this.brief = "display this help page"
         this.description = "display help information for the application or a feature"
-        this.args = true
+        this.args = '[feature|module]'
     }
 
     complete = (editing: boolean, args: string[]) => {
@@ -96,7 +96,13 @@ class DefaultHelpFeature extends Feature {
         const g_options = GetOptionDescTable(cli.app.options)
         const f_options = GetOptionDescTable(feature)
 
-        console.log(`Usage: ${cli.app.name} [global-options] ${path} [options] ${feature.args ? "[args]" : ""}`)
+        const args = typeof feature.args === 'string'
+            ? feature.args
+            : feature.args
+                ? '...'
+                : ''
+
+        console.log(`Usage: ${cli.app.name} [global-options] ${path} [options] ${args}`)
 
         if (feature.description) {
             console.log()

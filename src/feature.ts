@@ -5,8 +5,11 @@ export abstract class Feature {
     /** 详细介绍 */
     description?: string
 
-    /** 功能入口是否接受参数 */
-    args?: boolean
+    /** 
+     * 功能入口是否接受参数 
+     * 若指定为字符串，则表示参数的描述，用于帮助信息
+     */
+    args?: boolean | string
 
     /** 
      * 参数自动补全 
