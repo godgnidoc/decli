@@ -44,7 +44,7 @@ class DefaultCompleteFeature extends Feature {
         const raw_args = process.env.COMP_LINE.slice(0, parseInt(process.env.COMP_POINT))
         const args = raw_args.split(/\s+/).filter(word => word)
         const arg0 = args[0].trim()
-        if (arg0 === 'side' || arg0.endsWith('/side')) args.shift()
+        if (arg0 === cli.app.name || arg0.endsWith('/' + cli.app.name)) args.shift()
         comp.editing = raw_args.endsWith(' ')
             ? undefined
             : args[args.length - 1]
