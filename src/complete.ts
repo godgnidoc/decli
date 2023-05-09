@@ -16,7 +16,7 @@ export type CompgenAction = 'alias' | 'arrayvar' | 'binding'
 
 
 export function Compgen(action: CompgenAction, word = '', cwd = process.cwd()) {
-    const cmd = JSON.stringify(`bash -c 'compgen -A ${action} ${word}'`)
+    const cmd = JSON.stringify(`bash -c 'compgen -A ${action} -- ${word}'`)
     return execSync(`bash -c ${cmd}`, { cwd })
         .toString()
         .split('\n')
